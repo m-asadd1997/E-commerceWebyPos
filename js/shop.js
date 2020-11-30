@@ -8,7 +8,7 @@ window.onload = function viewCategory(){
    
     let display="";
     let ajax = new XMLHttpRequest();
-    ajax.open("GET","http://localhost:3000/category")
+    ajax.open("GET","http://localhost:8080/api/category/")
     ajax.setRequestHeader("content-type", "application/json")
     ajax.onprogress = function(){
 
@@ -36,6 +36,7 @@ window.onload = function viewCategory(){
     document.getElementById('productCount').innerHTML = cart !=undefined ? cart.products.length : 0;
     recentProducts();
 }
+let baseUrl = "http://localhost:8080/"
 
 function show(id,parent_id){
     console.log("hello",id);
@@ -77,7 +78,7 @@ function viewSubCategory(data){
 function showProducts(){
     let displayProducts="";
     let ajax = new XMLHttpRequest();
-    ajax.open("GET","http://localhost:8080/api/products/onlineproducts")
+    ajax.open("GET",baseUrl+"api/products/onlineproducts")
     ajax.setRequestHeader("content-type", "application/json")
     ajax.onprogress = function(){
 
@@ -97,7 +98,8 @@ function showProducts(){
                 name:p.name,
                 price:p.price,
                 img:p.image,
-                categoryId:p.categoryId
+                categoryId:p.categoryId,
+                quantityOnline: 1
               
 
             }
@@ -123,7 +125,7 @@ function showProducts(){
             <a href="#"><i class="fa fa-heart"></i></a>
             </div>
             <div class="button-cart">
-        
+            <button onclick=addToCart('${JSON.stringify(productList[i])}')><i class="fa fa-shopping-cart"></i> add to cart</button>
             </div>
             </div>
             </div>
@@ -393,13 +395,10 @@ function search(){
                 id:p.id,
                 name:p.name,
                 price:p.price,
-                img:p.img,
-                product_other_images:p.product_other_images,
-                quantity:p.quantity,
-                stock:p.stock,
-                parent_id:p.parent_id,
-                size:p.size,
-                color:p.color
+                img:p.image,
+                categoryId:p.categoryId,
+                quantityOnline: 1
+              
 
             }
 
@@ -429,7 +428,7 @@ function search(){
                 </div>
                 </div>
                 <div class="product-content">
-                <h3><a onclick="show('${productList[i].id}','${productList[i].parent_id}')">${productList[i].name}</a></h3>
+                <h3><a onclick="show('${productList[i].id}','${productList[i].categoryId}')">${productList[i].name}</a></h3>
                 <div class="price">
                 <span>Rs ${productList[i].price}</span>
                 <span class="old">$80.11</span>
@@ -459,12 +458,8 @@ function sort(){
     
 
     let ajax = new XMLHttpRequest();
-    if(selectedValue == 'new'){
-        ajax.open("GET", "http://localhost:3000/products?_sort=id&_order=desc&_limit=6")
-    }
-    else{
-        ajax.open("GET", "http://localhost:3000/products?_sort=price&_order="+selectedValue)
-    }
+    
+    ajax.open("GET",  baseUrl+"api/products/sortedonlineproduct/"+selectedValue)
     ajax.setRequestHeader("content-type", "application/json")
     // ajax.getResponseHeader("content-type")
     ajax.onprogress = function () {
@@ -476,19 +471,17 @@ function sort(){
 
         let productList = [];
 
-        for(let p of sortedProducts){
+        for(let p of sortedProducts.result){
+            
             
             let obj = {
                 id:p.id,
                 name:p.name,
                 price:p.price,
-                img:p.img,
-                product_other_images:p.product_other_images,
-                quantity:p.quantity,
-                stock:p.stock,
-                parent_id:p.parent_id,
-                size:p.size,
-                color:p.color
+                img:p.image,
+                categoryId:p.categoryId,
+                quantityOnline: 1
+              
 
             }
 
@@ -500,9 +493,8 @@ function sort(){
             sortedItems = sortedItems + `<div class="col-md-4 col-sm-4">
             <div class="single-product">
             <div class="product-img">
-            <a onclick="show('${productList[i].id}','${productList[i].parent_id}')">
+            <a onclick="show('${productList[i].id}','${productList[i].categoryId}')">
             <img style="width:262px; height:335px" src="${productList[i].img}" alt="" />
-            <img class="secondary-img" style="width:262px; height:335px" src="${productList[i].product_other_images[0]}" alt="" />
             </a>
             <span class="tag-line">new</span>
             <div class="product-action">
@@ -516,7 +508,7 @@ function sort(){
             </div>
             </div>
             <div class="product-content">
-            <h3><a onclick="show('${productList[i].id}','${productList[i].parent_id}')">${productList[i].name}</a></h3>
+            <h3><a onclick="show('${productList[i].id}','${productList[i].categoryId}')">${productList[i].name}</a></h3>
             <div class="price">
             <span>Rs ${productList[i].price}</span>
             <span class="old">$80.11</span>
@@ -539,7 +531,7 @@ function sort(){
 function recentProducts(){
     let recentProductsDisplay="";
     let ajax = new XMLHttpRequest();
-    ajax.open("GET","http://localhost:3000/products?_sort=id&_order=desc")
+    ajax.open("GET",  baseUrl+"api/products/sortedonlineproduct/new")
     ajax.setRequestHeader("content-type", "application/json")
     ajax.onprogress = function(){
 
@@ -548,40 +540,38 @@ function recentProducts(){
         
         let showProducts = JSON.parse(this.response)
         
+        
         let productList = [];
 
-        for(let p of showProducts){
+        for(let p of showProducts.result){
+            
             
             let obj = {
                 id:p.id,
                 name:p.name,
                 price:p.price,
-                img:p.img,
-                product_other_images:p.product_other_images,
-                quantity:p.quantity,
-                stock:p.stock,
-                parent_id:p.parent_id,
-                size:p.size,
-                color:p.color
+                img:p.image,
+                categoryId:p.categoryId,
+                quantityOnline: 1
+              
 
             }
 
         productList.push(obj);
-
+        
 
     }
-
+   
         for(let i=0; i<=2; i++){
-            
+            console.log("show products==> ",productList[i].id)
             recentProductsDisplay=recentProductsDisplay +`<div class="single-product">
             <div class="product-img">
-            <a href="product-details.html" onclick="show('${productList[i].id}','${productList[i].parent_id}')">
+            <a href="product-details.html" onclick="show('${productList[i].id}','${productList[i].categoryId}')">
             <img src="${productList[i].img}" alt="" />
-            <img class="secondary-img" src="${productList[i].product_other_images[0]}" alt="" />
             </a>
             </div>
             <div class="product-content">
-            <h3><a onclick="show('${productList[i].id}','${productList[i].parent_id}')">${productList[i].name}</a></h3>
+            <h3><a onclick="show('${productList[i].id}','${productList[i].categoryId}')">${productList[i].name}</a></h3>
             <div class="price">
             <span>Rs ${productList[i].price}</span>
             <span class="old">$90.11</span>
@@ -655,6 +645,9 @@ function addToCart(product){
                 "products":[parsedProduct]
             }  
             localStorage.setItem("cart",JSON.stringify(cart));
+            document.getElementById('productCount').innerHTML = cart !=undefined ? cart.products.length : 0;
+            
+
         }
 
     
@@ -668,7 +661,7 @@ function processForCartDistinctProduct(parsedProduct){
     let cart = getCartFromLocalStorage();
     if(cart.products.find(el=> el.id == parsedProduct.id)){
         let ind = cart.products.findIndex(el=> el.id == parsedProduct.id);
-        // cart.products[ind].quantity++;
+        cart.products[ind].quantityOnline++;
         // cart.products[ind].stock--;
         cart.amount += cart.products[ind].price;
         localStorage.setItem('cart',JSON.stringify(cart));

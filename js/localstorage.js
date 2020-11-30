@@ -37,7 +37,7 @@ function headerCart(){
                                         </div>
                                         <div class="cart-info">
                                             <h4><a href="#">${cart.products[i].name}</a></h4>
-                                            <span>Rs ${cart.products[i].price} <span>x ${cart.products[i].quantity}</span></span>
+                                            <span>Rs ${cart.products[i].price} <span>x ${cart.products[i].quantityOnline}</span></span>
                                         </div>
                                         <div class="del-icon">
                                             <i onclick="deleteCartProduct(${cart.products[i].id})" class="fa fa-times-circle"></i>
@@ -64,7 +64,7 @@ function deleteCartProduct(productId){
     
     let cart = getCartFromLocalStorage();
     let ind = cart.products.findIndex(el=> el.id == productId);
-    let quantity = cart.products[ind].quantity ;
+    let quantity = cart.products[ind].quantityOnline ;
     for(let i=1;i<=quantity;i++)
     {
         cart.amount -= cart.products[ind].price;

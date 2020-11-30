@@ -30,8 +30,8 @@ function checkout(){
         for(let i=0;i<=cart.products.length-1;i++){
 
             cartProduct = cartProduct + `<tr class="cart_item">
-                    <td class="product-name">${cart.products[i].name} <strong class="product-quantity">x ${cart.products[i].quantity}</strong></td>
-                    <td class="product-total" ><span class="amount">Rs ${(cart.products[i].price)*(cart.products[i].quantity)}</span></td>
+                    <td class="product-name">${cart.products[i].name} <strong class="product-quantity">x ${cart.products[i].quantityOnline}</strong></td>
+                    <td class="product-total" ><span class="amount">Rs ${(cart.products[i].price)*(cart.products[i].quantityOnline)}</span></td>
                  </tr>`    
 
             
