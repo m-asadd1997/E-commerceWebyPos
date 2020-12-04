@@ -30,8 +30,8 @@ function checkout(){
         for(let i=0;i<=cart.products.length-1;i++){
 
             cartProduct = cartProduct + `<tr class="cart_item">
-                    <td class="product-name">${cart.products[i].name} <strong class="product-quantity">x ${cart.products[i].quantityOnline}</strong></td>
-                    <td class="product-total" ><span class="amount">Rs ${(cart.products[i].price)*(cart.products[i].quantityOnline)}</span></td>
+                    <td class="product-name">${cart.products[i].product.name} <strong class="product-quantity">x ${cart.products[i].quantity}</strong></td>
+                    <td class="product-total" ><span class="amount">Rs ${(cart.products[i].product.price)*(cart.products[i].quantity)}</span></td>
                  </tr>`    
 
             
@@ -52,39 +52,19 @@ function checkout(){
 
 
 function placeOrder(){
-    debugger;
 
     
 
-    let trackId = uuid();
+    // let trackId = uuid();
 
     let cart = getCartFromLocalStorage();
+    console.log(cart)
     let settings = getSettingsFromLocalStorage();
 
     let orderAmount = cart.amount+settings.shipping ;
-
-    class placeOrder{
-
-        cartId = cart.id;
-        orderAmount = orderAmount;
-        orderStatus = "New";
-        orderDate = new Date();
-        trackId = trackId;
-
-
-
-        constructor(fname,lname,address,city,country,postcode,email,phone){
-            this.fname = fname ;
-            this.lname = lname ;
-            this.address = address ;
-            this.city = city ;
-            this.country = country ;
-            this.postcode = postcode ;
-            this.email = email ;
-            this.phone = phone ;
-            
-        }
-    }
+    let cardAmount = cart.amount;
+    let shipping = settings.shipping;
+ 
 
    let fname = document.getElementById('fname').value ;
    let lname = document.getElementById('lname').value ;
@@ -95,23 +75,38 @@ function placeOrder(){
    let email = document.getElementById('email').value ;
    let phone = document.getElementById('phone').value ;
 
-   const obj = new placeOrder(fname,lname,address,city,country,postcode,email,phone);
+   let orderObject = {
+    fname:fname,
+    lname:lname,
+    address:address,
+    city:city,
+    country:country,
+    email:email,
+    phone:phone,
+    postcode:postcode,
+    orderAmount:orderAmount,
+    cardAmount:cardAmount,
+    shipping:shipping,
+    orderStatus:"NEW",
+    cart:getCartFromLocalStorage()
+   }
+  
    
     
    let ajax = new XMLHttpRequest();
-   ajax.open("POST","http://localhost:3000/order");
+   ajax.open("POST","http://localhost:8080/api/order/");
    ajax.setRequestHeader("content-type","application/json");
    ajax.onprogress = function(){};
    ajax.onload = function(){
 
         let orderDetails = JSON.parse(this.response);
         // sms();
-        debugger
-        localStorage.setItem('trackId',JSON.stringify(orderDetails.trackId));
+        localStorage.setItem('trackId',JSON.stringify(orderDetails.result.uuid));
+        
         localStorage.removeItem('cart');
         window.location.href = "thank_you.html";
    };
-   ajax.send(JSON.stringify(obj));
+   ajax.send(JSON.stringify(orderObject));
    
  
 }

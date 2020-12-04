@@ -207,12 +207,17 @@ function quantity(product) {
             ajax.open("POST",baseUrl+"api/cart/");
             ajax.setRequestHeader("content-type","application/json");
             ajax.onprogress = function(){};
+            
             ajax.onload = function(){
-                // let cart = JSON.parse(this.response);
-                // localStorage.setItem("cart",JSON.stringify(cart));
-                document.getElementById('productCount').innerHTML = cart !=undefined ? cart.products.length : 0;
+           
+                let cart = JSON.parse(this.response);
+                console.log("response ==== > ",cart);
+                localStorage.setItem("cart",JSON.stringify(cart.result));
+                document.getElementById('productCount').innerHTML = cart.result !=undefined ? cart.result.products.length : 0;
+                window.location.href = "checkout.html"
+
             }    
             ajax.send(JSON.stringify(obj));
-        window.location.href = "checkout.html"
+        //window.location.href = "checkout.html"
         }
   }
